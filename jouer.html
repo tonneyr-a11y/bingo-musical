@@ -184,7 +184,7 @@ button,input{font:inherit}
     <div class="next">
       <div style="font-weight:800;font-size:13px;letter-spacing:.14em;text-transform:uppercase">Prochain titre</div>
       <div class="big" id="nextT">Touche « Titre au hasard »</div>
-      <div class="art" id="nextA">ou lance ta playlist en lecture aléatoire</div>
+      <div class="art" id="nextA">Chaque titre tiré est coché tout seul, il ne ressortira pas.</div>
       <div class="row"><button class="btn small" type="button" id="draw" style="background:#fff;color:#1b1430">Titre au hasard</button><button class="btn small ghost" type="button" id="markNext" style="border-color:rgba(255,255,255,.5);color:#fff" hidden>✓ Joué</button></div>
       <div class="row" id="ytRow" hidden style="justify-content:flex-start"><a class="btn small" id="ytmNext" href="#" target="_blank" rel="noopener" style="background:#ff0033">▶ Écouter</a></div>
     </div>
@@ -278,7 +278,7 @@ function renderHost(){$('hTitle').textContent='Animateur · '+dec;$('hCount').te
     cb.addEventListener('change',()=>{cb.checked?played.add(i):played.delete(i);saveHost();renderHost();if(!$('vOut').hidden)verify();});L.appendChild(row);});}
 $('draw').addEventListener('click',()=>{const left=POOL.filter(i=>!played.has(i));
   if(!left.length){$('ytRow').hidden=true;$('nextT').textContent='Tous les titres sont passés !';$('nextA').textContent='Lance une nouvelle partie.';$('markNext').hidden=true;return;}
-  nextIdx=left[Math.floor(Math.random()*left.length)];const s=DATA[dec].songs[nextIdx];$('nextT').textContent=s[0];$('nextA').textContent=s[1];$('markNext').hidden=false;$('ytmNext').href=ytm(s);$('ytmNext').textContent='▶ Écouter sur '+SVC[svc].n;$('ytmNext').dataset.i=nextIdx;$('ytRow').hidden=false;});
+  nextIdx=left[Math.floor(Math.random()*left.length)];const s=DATA[dec].songs[nextIdx];$('nextT').textContent=s[0];$('nextA').textContent=s[1]+' · déjà coché dans la liste';$('markNext').hidden=false;$('ytmNext').href=ytm(s);$('ytmNext').textContent='▶ Écouter sur '+SVC[svc].n;$('ytmNext').dataset.i=nextIdx;$('ytRow').hidden=false;$('markNext').hidden=true;played.add(nextIdx);saveHost();renderHost();if(!$('vOut').hidden)verify();});
 $('markNext').addEventListener('click',()=>{if(nextIdx==null)return;$('ytRow').hidden=true;played.add(nextIdx);saveHost();renderHost();$('markNext').hidden=true;$('nextT').textContent='C’est noté !';$('nextA').textContent='Touche « Titre au hasard » pour le suivant';nextIdx=null;if(!$('vOut').hidden)verify();});
 function askReset(){const w=$('resetWrap');w.innerHTML='<span class="confirm">Tout décocher ? <button class="btn small" type="button" id="rYes">Oui</button><button class="btn ghost small" type="button" id="rNo">Non</button></span>';
   const back=()=>{w.innerHTML='<button class="btn ghost small" type="button" id="hReset">Nouvelle partie</button>';bindReset();};
