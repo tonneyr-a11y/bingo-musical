@@ -12,6 +12,10 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
 .dj-listen{font-weight:700;color:var(--ink);font-size:15px}
 .cell.nope{animation:nope .35s}
 @keyframes nope{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.app-try{display:flex;flex-direction:column;gap:6px;background:var(--night);color:var(--on-night);border-radius:18px;padding:16px 18px;text-decoration:none}
+.app-try b{font-family:var(--head);font-size:19px}
+.app-try b::after{content:" →";color:var(--pink)}
+.app-try span:last-child{color:var(--on-night-muted);font-size:14px;line-height:1.4}
 </style>
 </head><body>
 <title>Bingo Musical Années 2000</title>
@@ -265,6 +269,7 @@ footer .container{display:flex;flex-direction:column;gap:6px}
       <div class="dj-btns"><button class="btn small" id="djNext" type="button">Chanson suivante</button><a class="dj-listen" id="djListen" target="_blank" rel="noopener" hidden>▶ Écouter sur YouTube Music</a></div>
     </div>
     <div class="counter"><span class="lcd" id="count">00/24 COCHÉS</span><button class="reset" id="reset" type="button">Recommencer</button></div>
+    <a class="app-try" href="jouer.html?essai=2000"><span class="lcd">📱 APPLI TÉLÉPHONE</span><b>Essaie l'appli joueur + animateur</b><span>Carte sur le téléphone, tirage des titres, écoute sur YouTube Music, Spotify ou Apple Music, vérification des gagnants.</span></a>
   </div>
   <div class="card">
     <div class="card-head"><span>B</span><span>I</span><span>N</span><span>G</span><span>O</span></div>
