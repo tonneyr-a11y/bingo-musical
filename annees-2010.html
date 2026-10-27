@@ -1,7 +1,18 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="index,follow">
-<style>*{box-sizing:border-box}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>*{box-sizing:border-box}img{max-width:100%}[hidden]{display:none!important}
+.dj{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.dj-now{font-family:var(--head);font-size:21px;font-weight:800;line-height:1.2}
+.dj-now small{display:block;font-family:var(--body);font-size:15px;font-weight:500;color:var(--muted);margin-top:4px}
+.dj-hint{font-size:15px;color:var(--muted);line-height:1.4}
+.dj-hint.yes{color:var(--pink);font-weight:700}
+.dj-btns{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+button.btn{border:0;cursor:pointer;font-family:inherit}
+.dj-listen{font-weight:700;color:var(--ink);font-size:15px}
+.cell.nope{animation:nope .35s}
+@keyframes nope{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+</style>
 </head><body>
 <title>Bingo Musical Années 2010</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -245,8 +256,14 @@ footer .container{display:flex;flex-direction:column;gap:6px}
 <section class="block try"><div class="container">
   <div class="try-copy">
     <div class="eyebrow">Essaie maintenant</div>
-    <h2 class="h2">Coche une ligne, juste pour voir</h2>
-    <p class="lead">Voici une vraie carte du jeu. Touche les titres comme si la musique passait, et complète une ligne (horizontale, verticale ou diagonale).</p>
+    <h2 class="h2">Fais une partie d'essai</h2>
+    <p class="lead">Tu es un invité. L'animateur lance les chansons une par une. Si le titre passe et qu'il est sur ta carte, touche-le. Le premier qui complète une ligne gagne.</p>
+    <div class="dj" aria-live="polite">
+      <div class="lcd" id="djn">ANIMATEUR · PRÊT</div>
+      <div class="dj-now" id="djNow">Appuie sur « Chanson suivante » pour lancer la partie.</div>
+      <div class="dj-hint" id="djHint">Dans une vraie soirée, c'est la playlist qui fait ce travail, en lecture aléatoire.</div>
+      <div class="dj-btns"><button class="btn small" id="djNext" type="button">Chanson suivante</button><a class="dj-listen" id="djListen" target="_blank" rel="noopener" hidden>▶ Écouter sur YouTube Music</a></div>
+    </div>
     <div class="counter"><span class="lcd" id="count">00/24 COCHÉS</span><button class="reset" id="reset" type="button">Recommencer</button></div>
   </div>
   <div class="card">
@@ -360,22 +377,41 @@ footer .container{display:flex;flex-direction:column;gap:6px}
 
 <script>
 const CARD=[["Christine", "Christine and the Queens"], ["Au DD", "PNL"], ["Cheap Thrills", "Sia"], ["Old Town Road", "Lil Nas X"], ["Wake Me Up", "Avicii"], ["Thrift Shop", "Macklemore & Ryan Lewis"], ["Diamonds", "Rihanna"], ["Heathens", "Twenty One Pilots"], ["Uptown Funk", "Mark Ronson ft. Bruno Mars"], ["Je m'en vais", "Vianney"], ["Bad Guy", "Billie Eilish"], ["7 Rings", "Ariana Grande"], null, ["Counting Stars", "OneRepublic"], ["Dommage", "Bigflo & Oli"], ["Ho Hey", "The Lumineers"], ["Just the Way You Are", "Bruno Mars"], ["Shape of You", "Ed Sheeran"], ["Get Lucky", "Daft Punk"], ["Blinding Lights", "The Weeknd"], ["All About That Bass", "Meghan Trainor"], ["New Rules", "Dua Lipa"], ["Hotline Bling", "Drake"], ["Someone Like You", "Adele"], ["Djadja", "Aya Nakamura"]];
+const DECOYS=[["Rolling in the Deep", "Adele"], ["Firework", "Katy Perry"], ["Roar", "Katy Perry"], ["We Found Love", "Rihanna"], ["Shallow", "Lady Gaga & Bradley Cooper"], ["Shake It Off", "Taylor Swift"], ["Blank Space", "Taylor Swift"], ["Thinking Out Loud", "Ed Sheeran"], ["Sorry", "Justin Bieber"], ["Despacito", "Luis Fonsi & Daddy Yankee"], ["Happy", "Pharrell Williams"], ["Call Me Maybe", "Carly Rae Jepsen"], ["Somebody That I Used to Know", "Gotye"], ["Gangnam Style", "PSY"], ["Party Rock Anthem", "LMFAO"], ["Levels", "Avicii"], ["Titanium", "David Guetta ft. Sia"], ["Summer", "Calvin Harris"], ["Can't Feel My Face", "The Weeknd"], ["Chandelier", "Sia"], ["What Makes You Beautiful", "One Direction"], ["Moves Like Jagger", "Maroon 5"], ["Waka Waka", "Shakira"], ["Super Bass", "Nicki Minaj"], ["Radioactive", "Imagine Dragons"], ["Believer", "Imagine Dragons"], ["Paradise", "Coldplay"], ["A Sky Full of Stars", "Coldplay"], ["Stressed Out", "Twenty One Pilots"], ["Do I Wanna Know?", "Arctic Monkeys"], ["Pumped Up Kicks", "Foster the People"], ["We Are Young", "Fun."], ["High Hopes", "Panic! at the Disco"], ["Ain't It Fun", "Paramore"], ["Centuries", "Fall Out Boy"], ["Royals", "Lorde"], ["Take Me to Church", "Hozier"], ["Video Games", "Lana Del Rey"], ["Little Talks", "Of Monsters and Men"], ["Feel It Still", "Portugal. The Man"], ["Pompeii", "Bastille"], ["Alors on danse", "Stromae"], ["Papaoutai", "Stromae"], ["Bella", "Maître Gims"], ["Dernière danse", "Indila"], ["Andalouse", "Kendji Girac"], ["Avenir", "Louane"], ["Balance ton quoi", "Angèle"], ["Cosmo", "Soprano"], ["Sur ma route", "Black M"], ["Je veux", "Zaz"]];
 const grid=document.getElementById('grid'),count=document.getElementById('count'),bingo=document.getElementById('bingo');
-const on=new Array(25).fill(false); on[12]=true;
+const djNow=document.getElementById('djNow'),djHint=document.getElementById('djHint'),djN=document.getElementById('djn'),djNext=document.getElementById('djNext'),djListen=document.getElementById('djListen');
+const on=new Array(25).fill(false);on[12]=true;
 const LINES=[];for(let r=0;r<5;r++)LINES.push([0,1,2,3,4].map(c=>r*5+c));for(let c=0;c<5;c++)LINES.push([0,1,2,3,4].map(r=>r*5+c));LINES.push([0,6,12,18,24],[4,8,12,16,20]);
+let called=new Set(),queue=[],n=0,done=false;
+function buildQueue(){const d=DECOYS.slice().sort(()=>Math.random()-.5);
+  const first=[{c:10},{d:0},{c:13},{c:6},{d:1},{c:11},{d:2},{c:14}];
+  const used=new Set([10,13,6,11,14]);queue=first.map(x=>x.c!==undefined?{s:CARD[x.c],i:x.c}:{s:d[x.d],i:-1});
+  const rest=[];CARD.forEach((s,i)=>{if(s&&!used.has(i))rest.push({s,i});});d.slice(3).forEach(s=>rest.push({s,i:-1}));
+  rest.sort(()=>Math.random()-.5);queue=queue.concat(rest);}
 const cells=CARD.map((s,i)=>{const b=document.createElement('button');b.type='button';b.className='cell';
   if(!s){b.classList.add('free');b.innerHTML='<b>CASE<br>OFFERTE</b>';b.disabled=true;}
   else{b.innerHTML='<b></b><i></i>';b.querySelector('b').textContent=s[0];b.querySelector('i').textContent=s[1];b.setAttribute('aria-pressed','false');b.setAttribute('aria-label',s[0]+', '+s[1]);
-    b.addEventListener('click',()=>{on[i]=!on[i];render();});}
+    b.addEventListener('click',()=>{
+      if(!called.has(i)&&!on[i]){b.classList.remove('nope');void b.offsetWidth;b.classList.add('nope');djHint.className='dj-hint';djHint.textContent=n?'Pas encore passé ! On ne coche que les titres que l\'animateur a lancés.':'Lance d\'abord une chanson avec le bouton « Chanson suivante ».';return;}
+      on[i]=!on[i];render();});}
   grid.appendChild(b);return b;});
 function render(){
   cells.forEach((c,i)=>{if(i===12)return;c.classList.toggle('on',on[i]);c.setAttribute('aria-pressed',String(on[i]));});
-  const n=on.filter(Boolean).length-1;count.textContent=String(n).padStart(2,'0')+'/24 COCHÉS';
+  const k=on.filter(Boolean).length-1;count.textContent=String(k).padStart(2,'0')+'/24 COCHÉS';
   const win=LINES.filter(l=>l.every(i=>on[i]));cells.forEach(c=>c.classList.remove('win'));
   win.flat().forEach(i=>cells[i].classList.add('win'));bingo.classList.toggle('show',win.length>0);
-  if(win.length)count.textContent='BINGO ! LIGNE COMPLÈTE';
+  if(win.length){count.textContent='BINGO ! LIGNE COMPLÈTE';if(!done){done=true;djHint.className='dj-hint yes';djHint.textContent='Bingo ! En soirée, tu cries « Bingo ! », l\'animateur vérifie ta carte et on passe à la manche suivante.';}}
 }
-document.getElementById('reset').addEventListener('click',()=>{for(let i=0;i<25;i++)on[i]=i===12;render();});
+djNext.addEventListener('click',()=>{if(!queue.length)buildQueue();const x=queue.shift();n++;
+  djN.textContent='ANIMATEUR · TITRE '+String(n).padStart(2,'0');
+  djNow.innerHTML='';djNow.append('♪ '+x.s[0]);const sm=document.createElement('small');sm.textContent=x.s[1];djNow.append(sm);
+  djListen.href='https://music.youtube.com/search?q='+encodeURIComponent(x.s[0]+' '+x.s[1]);djListen.hidden=false;
+  if(done)return;
+  if(x.i>=0){called.add(x.i);djHint.className='dj-hint yes';djHint.textContent='Il est sur ta carte ! Trouve-le et touche-le.';}
+  else{djHint.className='dj-hint';djHint.textContent='Pas sur ta carte cette fois. Les autres joueurs l\'ont peut-être… Chanson suivante !';}
+});
+document.getElementById('reset').addEventListener('click',()=>{for(let i=0;i<25;i++)on[i]=i===12;called=new Set();queue=[];n=0;done=false;
+  djN.textContent='ANIMATEUR · PRÊT';djNow.textContent='Appuie sur « Chanson suivante » pour lancer la partie.';djHint.className='dj-hint';djHint.textContent='Dans une vraie soirée, c\'est la playlist qui fait ce travail, en lecture aléatoire.';djListen.hidden=true;render();});
 render();
 </script>
 
