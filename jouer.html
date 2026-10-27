@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<style>*{box-sizing:border-box}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Bingo Musical Mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Karla:wght@400;600;800&family=Permanent+Marker&family=VT323&display=swap">
+<style>
+/* Layout: a single-column phone app in the OTA night-club palette: code gate, then player card or host console. */
+:root{
+  --bg:#120d22; --surface:#1e1638; --surface-2:#2a2148; --ink:#f4effc; --muted:#b9b0cf; --line:#352b55;
+  --card:#ffffff; --card-ink:#1b1430; --card-muted:#655c7a; --card-line:#e3dcee;
+  --pink:#ff4f8f; --cyan:#3fdcea; --sun:#ffd23f; --lcd:#c9e7a0; --lcd-ink:#24321a; --ok:#2bb673;
+  --head:"Bricolage Grotesque","Karla",system-ui,sans-serif; --body:"Karla",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --marker:"Permanent Marker","Comic Sans MS",cursive; --pixel:"VT323",ui-monospace,"Courier New",monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{background:radial-gradient(700px 360px at 90% 0%,rgba(63,220,234,.16),transparent 60%),radial-gradient(700px 400px at 0% 100%,rgba(255,79,143,.18),transparent 60%),var(--bg);background-attachment:fixed;color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
+.app{max-width:520px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--head);margin:0;line-height:1.05;text-wrap:balance}
+p{margin:0}
+button,input{font:inherit}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:2px;border-radius:8px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.brand{font-weight:800;letter-spacing:.14em;font-size:12px;text-transform:uppercase}
+.brand span{color:var(--pink)}
+.lcd{font-family:var(--pixel);background:var(--lcd);color:var(--lcd-ink);padding:1px 10px;border-radius:6px;font-size:20px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.marker{font-family:var(--marker);font-weight:400;color:var(--pink);display:inline-block;transform:rotate(-3deg)}
+.muted{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:14px 22px;font-weight:800;font-size:17px;cursor:pointer;background:var(--pink);color:#fff;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn.small{padding:9px 14px;font-size:14px}
+.btn.wide{width:100%}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px}
+
+/* gate */
+.gate h1{font-size:clamp(38px,11vw,54px);font-weight:800;letter-spacing:-.02em}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:700;font-size:14px;color:var(--muted)}
+.field input{background:var(--bg);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:14px 16px;font-size:20px;letter-spacing:.08em;text-transform:uppercase}
+.err{color:#ff8fb3;min-height:1.4em;font-size:14px}
+
+/* mode */
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mode{background:var(--surface-2);border:2px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:8px;text-align:left;color:var(--ink);cursor:pointer}
+.mode:hover{border-color:var(--pink)}
+.mode b{font-family:var(--head);font-size:20px}
+.mode span{color:var(--muted);font-size:14px}
+.mode .lcd{align-self:flex-start;font-size:18px}
+
+/* card */
+.card{background:var(--card);color:var(--card-ink);border-radius:16px;overflow:hidden;box-shadow:8px 8px 0 var(--cyan);position:relative}
+.card-head{display:grid;grid-template-columns:repeat(5,1fr);background:#1b1430}
+.card-head span{font-family:var(--head);font-weight:800;font-size:26px;text-align:center;padding:6px 0}
+.card-head span:nth-child(3n+1){color:#ff4f8f}.card-head span:nth-child(3n+2){color:#3fdcea}.card-head span:nth-child(3n){color:#ffd23f}
+.grid{display:grid;grid-template-columns:repeat(5,1fr)}
+.cell{font:inherit;color:var(--card-ink);background:var(--card);border:0;border-right:1px solid var(--card-line);border-bottom:1px solid var(--card-line);aspect-ratio:1/1.08;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:3px;gap:2px;min-width:0;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent}
+.cell:nth-child(5n){border-right:0}.cell:nth-child(n+21){border-bottom:0}
+.cell b{font-size:clamp(9px,2.7vw,12.5px);line-height:1.08;overflow-wrap:anywhere}
+.cell i{font-style:normal;font-size:clamp(8px,2.1vw,10px);color:var(--card-muted);line-height:1.08;overflow-wrap:anywhere}
+.cell.on::after{content:"";position:absolute;width:70%;aspect-ratio:1;border:3px solid #f5b800;border-radius:50%;transform:rotate(-8deg)}
+.cell.free{background:#e8306f;color:#fff;cursor:default}
+.cell.free b{font-size:clamp(9px,2.6vw,12px);letter-spacing:.05em}
+.cell.win{background:#fff3c4}
+.cell.played{background:#e7f8ee}
+.cell.played.on{background:#c8f0d8}
+.bingo{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.bingo span{font-family:var(--marker);font-size:64px;color:#e8306f;transform:rotate(-10deg) scale(.5);opacity:0;transition:all .35s cubic-bezier(.2,1.6,.4,1);text-shadow:3px 3px 0 #fff}
+.bingo.show span{opacity:1;transform:rotate(-10deg) scale(1)}
+.wins{display:flex;flex-wrap:wrap;gap:8px}
+.win-chip{font-weight:700;font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.win-chip.got{background:var(--sun);border-color:var(--sun);color:#1b1430}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px}
+
+/* host */
+.next{background:linear-gradient(135deg,rgba(255,79,143,.85),rgba(10,166,184,.8));border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.next .big{font-family:var(--head);font-weight:800;font-size:26px;line-height:1.1}
+.next .art{opacity:.9}
+.list{display:flex;flex-direction:column}
+.song{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.song input{width:22px;height:22px;accent-color:var(--pink);flex:none}
+.song .n{font-family:var(--pixel);font-size:18px;color:var(--muted);min-width:2ch;font-variant-numeric:tabular-nums}
+.song .t{flex:1;min-width:0}
+.song .t b{display:block}
+.song .t span{color:var(--muted);font-size:14px}
+.yt{flex:none;font-size:13px;font-weight:800;color:#fff;background:#ff0033;border-radius:999px;padding:5px 10px;text-decoration:none}
+.ytm{background:#1b1430;border:1px solid var(--line)}
+.svc{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--bg);border-radius:14px;padding:4px}
+.svc button{border:0;border-radius:10px;padding:10px 4px;font-weight:800;font-size:13px;background:transparent;color:var(--muted);cursor:pointer}
+.svc button[aria-checked="true"]{background:var(--pink);color:#fff}
+.song.done .t b{color:var(--muted);text-decoration:line-through}
+.verify{display:flex;gap:8px}
+.verify input{width:110px;background:var(--bg);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:10px 12px;font-size:18px}
+.result{font-weight:700}
+.result .yes{color:#7dffb4}.result .no{color:var(--muted)}
+.how{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 18px}
+.how summary{cursor:pointer;font-weight:800;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.how summary::-webkit-details-marker{display:none}
+.how summary::after{content:"+";font-family:var(--pixel);font-size:26px;line-height:.8;color:var(--pink)}
+.how[open] summary::after{content:"–"}
+.how ol{margin:10px 0 0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:15px}
+.how ol b{color:var(--ink)}
+.foot{font-size:13px;color:var(--muted);text-align:center}
+</style>
+
+<div class="app" id="app">
+  <div class="top"><div class="brand">OTA <span>·</span> Bingo Musical</div><div class="lcd" id="topLcd">▶ PRÊT</div></div>
+
+  <section id="gate" class="gate" style="display:flex;flex-direction:column;gap:18px">
+    <h1>La version <span class="marker">téléphone</span></h1>
+    <p class="muted">Pas d'imprimante ? Chaque joueur reçoit sa carte sur son téléphone et coche les titres du bout du doigt. Entre le code d'accès donné par l'organisateur de la soirée.</p>
+    <form class="panel" id="gateForm" novalidate>
+      <div class="field"><label for="code">Code d'accès</label><input id="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="EX : CODE2000"></div>
+      <p class="err" id="err" aria-live="polite"></p>
+      <button class="btn wide" type="submit">Entrer dans la partie</button>
+    </form>
+    <details class="how"><summary>Comment jouer ?</summary><ol>
+      <li><b>Joueurs :</b> choisissez « Je joue ». Chacun reçoit sa propre carte de 24 titres, la case du milieu est offerte.</li>
+      <li><b>Animateur :</b> choisissez « J'anime ». Lancez la musique (playlist en aléatoire, ou « Titre au hasard » puis le bouton Écouter de ton appli de musique) et faites écouter chaque morceau 20 à 30 secondes, sans dire le titre.</li>
+      <li><b>Cocher :</b> si tu reconnais un titre de ta carte, touche-le pour le cocher.</li>
+      <li><b>Gagner :</b> une ligne complète, puis les quatre coins, puis le carton plein. Crie « Bingo ! » et donne ton numéro de carte : l'animateur le vérifie dans « Vérifier une carte ».</li>
+    </ol></details>
+    <p class="foot">Le code se trouve sur la page reçue après l'achat du jeu.</p>
+  </section>
+
+  <section id="mode" hidden style="display:flex;flex-direction:column;gap:16px">
+    <h2 style="font-size:34px" id="modeTitle">Bingo</h2>
+    <p class="muted">Tu joues avec une carte, ou tu animes la partie et lances la musique ?</p>
+    <div class="modes">
+      <button class="mode" type="button" id="goPlayer"><span class="lcd">JOUEUR</span><b>Je joue</b><span>Je reçois ma carte et je coche les titres.</span></button>
+      <button class="mode" type="button" id="goHost"><span class="lcd">ANIMATEUR</span><b>J'anime</b><span>Je coche les titres joués et je vérifie les gagnants.</span></button>
+    </div>
+    <details class="how" open><summary>Comment jouer ?</summary><ol>
+      <li><b>Joueurs :</b> choisissez « Je joue ». Chacun reçoit sa propre carte de 24 titres, la case du milieu est offerte.</li>
+      <li><b>Animateur :</b> choisissez « J'anime ». Lancez la musique (playlist en aléatoire, ou « Titre au hasard » puis le bouton Écouter de ton appli de musique) et faites écouter chaque morceau 20 à 30 secondes, sans dire le titre.</li>
+      <li><b>Cocher :</b> si tu reconnais un titre de ta carte, touche-le pour le cocher.</li>
+      <li><b>Gagner :</b> une ligne complète, puis les quatre coins, puis le carton plein. Crie « Bingo ! » et donne ton numéro de carte : l'animateur le vérifie dans « Vérifier une carte ».</li>
+    </ol></details>
+    <button class="btn ghost small" type="button" id="logout" style="align-self:flex-start">Changer de code</button>
+  </section>
+
+  <section id="player" hidden style="display:flex;flex-direction:column;gap:16px">
+    <div class="row"><h2 style="font-size:26px" id="pTitle">Ma carte</h2><span class="lcd" id="pNum">N°01</span></div>
+    <div class="card"><div class="card-head"><span>B</span><span>I</span><span>N</span><span>G</span><span>O</span></div><div class="grid" id="pGrid"></div><div class="bingo" id="pBingo"><span>Bingo !</span></div></div>
+    <div class="wins" id="pWins"></div>
+    <p class="muted" style="font-size:14px">Touche un titre quand tu le reconnais. Si tu gagnes, montre ton numéro de carte à l'animateur.</p>
+    <details class="how"><summary>Comment jouer ?</summary><ol>
+      <li><b>Joueurs :</b> choisissez « Je joue ». Chacun reçoit sa propre carte de 24 titres, la case du milieu est offerte.</li>
+      <li><b>Animateur :</b> choisissez « J'anime ». Lancez la musique (playlist en aléatoire, ou « Titre au hasard » puis le bouton Écouter de ton appli de musique) et faites écouter chaque morceau 20 à 30 secondes, sans dire le titre.</li>
+      <li><b>Cocher :</b> si tu reconnais un titre de ta carte, touche-le pour le cocher.</li>
+      <li><b>Gagner :</b> une ligne complète, puis les quatre coins, puis le carton plein. Crie « Bingo ! » et donne ton numéro de carte : l'animateur le vérifie dans « Vérifier une carte ».</li>
+    </ol></details>
+    <div class="row">
+      <button class="btn ghost small" type="button" id="pBack">← Menu</button>
+      <div id="newWrap"><button class="btn ghost small" type="button" id="pNew">Nouvelle carte</button></div>
+    </div>
+  </section>
+
+  <section id="host" hidden style="display:flex;flex-direction:column;gap:16px">
+    <div class="row"><h2 style="font-size:26px" id="hTitle">Animateur</h2><span class="lcd" id="hCount">00/75</span></div>
+    <div class="panel" style="padding:14px 16px;gap:10px">
+      <div style="font-weight:800;font-size:14px;color:var(--muted)">Mon appli de musique</div>
+      <div class="svc" role="radiogroup" aria-label="Appli de musique">
+        <button type="button" role="radio" data-s="ytm">YouTube Music</button><button type="button" role="radio" data-s="spotify">Spotify</button><button type="button" role="radio" data-s="apple">Apple Music</button>
+      </div>
+    </div>
+    <div class="next">
+      <div style="font-weight:800;font-size:13px;letter-spacing:.14em;text-transform:uppercase">Prochain titre</div>
+      <div class="big" id="nextT">Touche « Titre au hasard »</div>
+      <div class="art" id="nextA">ou lance ta playlist en lecture aléatoire</div>
+      <div class="row"><button class="btn small" type="button" id="draw" style="background:#fff;color:#1b1430">Titre au hasard</button><button class="btn small ghost" type="button" id="markNext" style="border-color:rgba(255,255,255,.5);color:#fff" hidden>✓ Joué</button></div>
+      <div class="row" id="ytRow" hidden style="justify-content:flex-start"><a class="btn small" id="ytmNext" href="#" target="_blank" rel="noopener" style="background:#ff0033">▶ Écouter</a></div>
+    </div>
+    <div class="panel">
+      <h3 style="font-size:20px">Vérifier une carte</h3>
+      <div class="verify"><input id="vNum" type="number" min="1" max="50" inputmode="numeric" placeholder="N° 1-50" aria-label="Numéro de carte"><button class="btn small" type="button" id="vGo">Vérifier</button></div>
+      <div id="vOut" hidden style="display:flex;flex-direction:column;gap:12px">
+        <div class="card" style="box-shadow:none"><div class="grid" id="vGrid"></div></div>
+        <p class="result" id="vRes"></p>
+      </div>
+    </div>
+    <div class="panel" style="padding-block:10px">
+      <div class="row" style="padding-top:8px"><h3 style="font-size:20px">Titres joués</h3><span id="resetWrap"><button class="btn ghost small" type="button" id="hReset">Nouvelle partie</button></span></div>
+      <div class="list" id="hList"></div>
+    </div>
+    <button class="btn ghost small" type="button" id="hBack" style="align-self:flex-start">← Menu</button>
+  </section>
+  <p class="foot">Un jeu OTA · @ota5.0 · Musique non incluse</p>
+</div>
+
+<script>
+const DATA={"90": {"songs": [["...Baby One More Time", "Britney Spears"], ["Wannabe", "Spice Girls"], ["I Want It That Way", "Backstreet Boys"], ["Everybody (Backstreet's Back)", "Backstreet Boys"], ["Tearin' Up My Heart", "*NSYNC"], ["Genie in a Bottle", "Christina Aguilera"], ["Fantasy", "Mariah Carey"], ["I Will Always Love You", "Whitney Houston"], ["My Heart Will Go On", "Céline Dion"], ["Frozen", "Madonna"], ["Vogue", "Madonna"], ["Black or White", "Michael Jackson"], ["No Scrubs", "TLC"], ["Waterfalls", "TLC"], ["Bills, Bills, Bills", "Destiny's Child"], ["Livin' la Vida Loca", "Ricky Martin"], ["Mambo No. 5", "Lou Bega"], ["Barbie Girl", "Aqua"], ["Blue (Da Ba Dee)", "Eiffel 65"], ["Boom, Boom, Boom, Boom!!", "Vengaboys"], ["What Is Love", "Haddaway"], ["It's My Life", "Dr. Alban"], ["No Limit", "2 Unlimited"], ["All That She Wants", "Ace of Base"], ["Rhythm Is a Dancer", "Snap!"], ["The Rhythm of the Night", "Corona"], ["Be My Lover", "La Bouche"], ["Macarena", "Los del Río"], ["Gangsta's Paradise", "Coolio"], ["Killing Me Softly", "Fugees"], ["Men in Black", "Will Smith"], ["Boombastic", "Shaggy"], ["Freed from Desire", "Gala"], ["Ironic", "Alanis Morissette"], ["MMMBop", "Hanson"], ["Never Ever", "All Saints"], ["Angels", "Robbie Williams"], ["Believe", "Cher"], ["Man! I Feel Like a Woman!", "Shania Twain"], ["If You Had My Love", "Jennifer Lopez"], ["Smells Like Teen Spirit", "Nirvana"], ["Wonderwall", "Oasis"], ["Don't Look Back in Anger", "Oasis"], ["Song 2", "Blur"], ["Zombie", "The Cranberries"], ["Californication", "Red Hot Chili Peppers"], ["Losing My Religion", "R.E.M."], ["Basket Case", "Green Day"], ["Pretty Fly (for a White Guy)", "The Offspring"], ["What's My Age Again?", "Blink-182"], ["Creep", "Radiohead"], ["Don't Speak", "No Doubt"], ["All Star", "Smash Mouth"], ["What's Up?", "4 Non Blondes"], ["Always", "Bon Jovi"], ["Nothing Else Matters", "Metallica"], ["November Rain", "Guns N' Roses"], ["Bitter Sweet Symphony", "The Verve"], ["Pure Morning", "Placebo"], ["Stupid Girl", "Garbage"], ["Je danse le Mia", "IAM"], ["Caroline", "MC Solaar"], ["Tu m'oublieras", "Larusso"], ["Chanter pour ceux qui sont loin de chez eux", "Lââm"], ["Lucie", "Pascal Obispo"], ["Il y a trop de gens qui t'aiment", "Hélène Ségara"], ["Dieu m'a donné la foi", "Ophélie Winter"], ["Partir un jour", "2Be3"], ["Je te donne", "Worlds Apart"], ["La Tribu de Dana", "Manau"], ["Tomber la chemise", "Zebda"], ["Respect", "Alliance Ethnik"], ["Around the World", "Daft Punk"], ["Music Sounds Better with You", "Stardust"], ["Désenchantée", "Mylène Farmer"]], "cards": [[72, 47, 70, 20, 24, 56, 67, 2, 30, 19, 43, 26, 16, 34, 3, 54, 5, 7, 48, 52, 15, 6, 9, 11], [18, 3, 25, 31, 28, 74, 47, 6, 46, 27, 72, 63, 2, 33, 10, 60, 35, 19, 65, 69, 64, 61, 1, 0], [63, 13, 33, 61, 65, 32, 6, 56, 57, 69, 73, 11, 26, 64, 54, 2, 72, 18, 59, 10, 34, 19, 37, 29], [17, 49, 60, 37, 38, 41, 69, 0, 11, 32, 55, 4, 3, 24, 34, 8, 19, 65, 6, 20, 63, 72, 36, 7], [30, 37, 48, 28, 66, 29, 10, 69, 56, 54, 11, 61, 68, 46, 50, 49, 13, 60, 70, 72, 71, 36, 55, 31], [47, 15, 35, 71, 27, 25, 32, 44, 64, 65, 61, 57, 4, 74, 20, 68, 63, 21, 30, 34, 3, 70, 26, 69], [74, 49, 54, 67, 63, 39, 30, 61, 28, 22, 55, 27, 21, 66, 73, 2, 14, 26, 62, 7, 60, 37, 19, 34], [72, 67, 18, 23, 65, 73, 50, 35, 39, 26, 17, 64, 8, 49, 68, 31, 41, 16, 69, 19, 4, 1, 15, 34], [34, 37, 49, 6, 29, 25, 26, 5, 21, 7, 16, 72, 33, 73, 30, 14, 18, 52, 68, 13, 54, 4, 24, 1], [26, 52, 22, 69, 49, 29, 21, 40, 3, 19, 34, 16, 0, 61, 55, 37, 33, 45, 67, 38, 65, 54, 71, 42], [44, 63, 7, 9, 62, 67, 13, 49, 55, 54, 50, 18, 34, 58, 73, 10, 23, 45, 26, 39, 15, 53, 12, 38], [46, 6, 7, 31, 37, 73, 5, 62, 64, 13, 18, 42, 38, 15, 20, 47, 49, 22, 30, 52, 29, 41, 39, 60], [33, 46, 8, 57, 3, 45, 37, 28, 58, 18, 73, 44, 72, 70, 69, 43, 68, 17, 11, 56, 50, 20, 4, 24], [48, 38, 11, 65, 37, 55, 1, 16, 40, 14, 18, 58, 31, 52, 27, 63, 36, 6, 8, 47, 53, 5, 13, 33], [5, 70, 52, 53, 18, 36, 14, 65, 73, 57, 31, 66, 42, 21, 69, 6, 51, 58, 43, 3, 72, 74, 29, 63], [69, 23, 61, 65, 25, 59, 45, 11, 39, 56, 41, 6, 66, 36, 35, 60, 0, 71, 31, 21, 24, 51, 63, 9], [44, 31, 18, 21, 65, 28, 39, 52, 10, 47, 35, 72, 17, 70, 16, 27, 43, 2, 62, 41, 68, 55, 56, 5], [2, 60, 38, 26, 69, 19, 37, 1, 70, 57, 17, 13, 39, 25, 32, 46, 36, 24, 33, 45, 44, 34, 65, 72], [65, 41, 67, 1, 5, 32, 0, 37, 63, 19, 15, 27, 56, 8, 34, 62, 40, 21, 39, 30, 47, 16, 28, 42], [43, 14, 54, 41, 70, 6, 4, 34, 59, 24, 31, 0, 66, 39, 9, 16, 48, 12, 22, 33, 27, 65, 55, 64], [72, 0, 28, 50, 65, 42, 38, 63, 27, 58, 22, 32, 57, 36, 69, 2, 3, 20, 71, 73, 5, 44, 37, 55], [52, 53, 58, 69, 16, 47, 73, 51, 67, 22, 40, 19, 27, 56, 34, 0, 46, 6, 72, 9, 64, 15, 45, 5], [14, 64, 34, 12, 24, 29, 55, 20, 47, 6, 11, 2, 3, 60, 58, 4, 35, 39, 18, 10, 8, 62, 28, 7], [69, 22, 61, 13, 58, 24, 40, 72, 28, 29, 16, 6, 65, 11, 42, 38, 1, 55, 44, 31, 3, 9, 4, 70], [41, 10, 3, 4, 51, 39, 15, 21, 29, 58, 64, 63, 72, 53, 71, 0, 69, 6, 34, 70, 45, 16, 49, 23], [3, 18, 19, 8, 49, 27, 36, 69, 63, 40, 29, 35, 22, 14, 39, 70, 66, 2, 52, 54, 67, 33, 13, 46], [11, 8, 3, 17, 23, 42, 9, 73, 21, 60, 47, 41, 35, 48, 1, 63, 2, 44, 38, 27, 10, 49, 61, 54], [6, 72, 58, 15, 55, 8, 64, 23, 50, 44, 62, 30, 66, 25, 41, 9, 7, 60, 48, 10, 35, 63, 54, 45], [51, 40, 56, 33, 19, 6, 1, 43, 61, 59, 52, 54, 60, 48, 14, 69, 4, 74, 47, 44, 34, 21, 64, 24], [61, 21, 38, 52, 23, 7, 69, 18, 67, 56, 29, 65, 11, 66, 14, 16, 31, 43, 34, 15, 35, 70, 58, 55], [20, 5, 64, 56, 39, 38, 26, 40, 47, 9, 18, 66, 46, 28, 45, 43, 71, 15, 50, 53, 35, 72, 29, 60], [68, 66, 55, 44, 6, 35, 2, 13, 58, 3, 14, 24, 65, 74, 70, 37, 19, 36, 51, 29, 8, 53, 46, 0], [20, 34, 47, 3, 27, 60, 51, 14, 41, 72, 54, 48, 74, 8, 6, 33, 30, 58, 12, 9, 39, 18, 65, 67], [46, 64, 21, 22, 57, 70, 18, 5, 10, 11, 68, 48, 7, 38, 3, 14, 52, 53, 16, 50, 58, 62, 49, 55], [9, 46, 61, 4, 30, 50, 29, 37, 26, 3, 65, 23, 52, 68, 45, 51, 22, 70, 47, 56, 34, 38, 58, 5], [25, 12, 20, 49, 65, 27, 9, 68, 15, 22, 16, 29, 42, 50, 26, 74, 61, 2, 47, 33, 3, 48, 64, 23], [48, 2, 0, 57, 59, 67, 60, 38, 72, 55, 47, 37, 8, 68, 19, 12, 73, 62, 39, 22, 41, 51, 7, 15], [51, 2, 67, 24, 5, 29, 71, 6, 47, 13, 21, 26, 43, 59, 12, 74, 60, 56, 18, 55, 28, 31, 1, 34], [36, 54, 51, 49, 8, 46, 30, 52, 40, 0, 5, 26, 73, 50, 64, 69, 13, 20, 71, 59, 48, 24, 12, 61], [30, 49, 74, 22, 7, 73, 8, 42, 24, 27, 6, 31, 61, 38, 16, 25, 66, 68, 63, 35, 59, 54, 52, 72], [41, 31, 40, 66, 52, 20, 54, 25, 60, 49, 45, 2, 42, 35, 36, 21, 55, 4, 58, 29, 19, 74, 22, 15], [4, 3, 13, 31, 23, 73, 53, 71, 6, 61, 69, 19, 26, 62, 21, 29, 37, 39, 72, 35, 20, 27, 28, 24], [16, 62, 65, 33, 43, 64, 19, 28, 9, 56, 0, 11, 49, 63, 1, 42, 27, 29, 23, 60, 70, 22, 18, 3], [26, 47, 41, 42, 66, 51, 40, 16, 74, 34, 73, 17, 35, 9, 30, 36, 1, 18, 3, 24, 60, 52, 22, 72], [18, 24, 32, 71, 8, 62, 56, 21, 27, 23, 41, 25, 20, 43, 5, 55, 0, 49, 35, 14, 6, 65, 52, 38], [63, 37, 7, 9, 26, 36, 62, 24, 16, 74, 15, 46, 70, 64, 8, 57, 68, 28, 13, 71, 17, 42, 51, 0], [7, 69, 16, 35, 27, 55, 54, 12, 29, 9, 24, 40, 30, 46, 60, 19, 51, 43, 22, 38, 52, 39, 44, 63], [36, 26, 27, 16, 65, 37, 51, 28, 30, 49, 41, 22, 61, 15, 68, 73, 38, 70, 40, 62, 50, 63, 58, 31], [59, 36, 40, 24, 8, 44, 5, 46, 20, 45, 38, 9, 54, 67, 70, 47, 43, 73, 13, 56, 23, 17, 19, 28], [8, 39, 56, 4, 46, 6, 31, 52, 66, 1, 54, 58, 51, 71, 57, 35, 32, 47, 17, 70, 61, 53, 40, 48]]}, "2000": {"songs": [["Toxic", "Britney Spears"], ["Oops!... I Did It Again", "Britney Spears"], ["Beautiful", "Christina Aguilera"], ["Complicated", "Avril Lavigne"], ["Sk8er Boi", "Avril Lavigne"], ["Girlfriend", "Avril Lavigne"], ["I Kissed a Girl", "Katy Perry"], ["Hot n Cold", "Katy Perry"], ["Umbrella", "Rihanna"], ["SOS", "Rihanna"], ["Crazy in Love", "Beyoncé"], ["Single Ladies", "Beyoncé"], ["Hips Don't Lie", "Shakira"], ["Whenever, Wherever", "Shakira"], ["Since U Been Gone", "Kelly Clarkson"], ["So What", "Pink"], ["Hollaback Girl", "Gwen Stefani"], ["Promiscuous", "Nelly Furtado"], ["Maneater", "Nelly Furtado"], ["Just Dance", "Lady Gaga"], ["Poker Face", "Lady Gaga"], ["Where Is the Love?", "Black Eyed Peas"], ["I Gotta Feeling", "Black Eyed Peas"], ["Cry Me a River", "Justin Timberlake"], ["SexyBack", "Justin Timberlake"], ["Yeah!", "Usher"], ["Hey Ya!", "OutKast"], ["Without Me", "Eminem"], ["Lose Yourself", "Eminem"], ["Survivor", "Destiny's Child"], ["Don't Cha", "Pussycat Dolls"], ["It Wasn't Me", "Shaggy"], ["Can't Get You Out of My Head", "Kylie Minogue"], ["Party in the U.S.A.", "Miley Cyrus"], ["So Yesterday", "Hilary Duff"], ["Bleeding Love", "Leona Lewis"], ["Rehab", "Amy Winehouse"], ["You're Beautiful", "James Blunt"], ["Bad Day", "Daniel Powter"], ["Get Busy", "Sean Paul"], ["Misery Business", "Paramore"], ["Decode", "Paramore"], ["Welcome to the Black Parade", "My Chemical Romance"], ["Sugar, We're Goin Down", "Fall Out Boy"], ["Boulevard of Broken Dreams", "Green Day"], ["American Idiot", "Green Day"], ["All the Small Things", "Blink-182"], ["Welcome to My Life", "Simple Plan"], ["Perfect", "Simple Plan"], ["In Too Deep", "Sum 41"], ["Lifestyles of the Rich & Famous", "Good Charlotte"], ["I Write Sins Not Tragedies", "Panic! at the Disco"], ["In the End", "Linkin Park"], ["Numb", "Linkin Park"], ["Bring Me to Life", "Evanescence"], ["Monsoon", "Tokio Hotel"], ["Mr. Brightside", "The Killers"], ["This Love", "Maroon 5"], ["Viva la Vida", "Coldplay"], ["Sex on Fire", "Kings of Leon"], ["La Boulette", "Diam's"], ["Ma philosophie", "Amel Bent"], ["Près de moi", "Lorie"], ["Moi... Lolita", "Alizée"], ["Le Chemin", "Kyo"], ["Butterfly", "Superbus"], ["Dis-moi", "BB Brunes"], ["On s'attache", "Christophe Maé"], ["Parce qu'on vient de loin", "Corneille"], ["Femme de couleur", "Shy'm"], ["J'attends l'amour", "Jenifer"], ["Toutes les femmes de ta vie", "L5"], ["Hey Oh", "Tragédie"], ["One More Time", "Daft Punk"], ["Love Generation", "Bob Sinclar"]], "cards": [[37, 60, 38, 40, 64, 43, 44, 54, 61, 32, 18, 0, 63, 51, 17, 53, 57, 13, 50, 24, 1, 6, 23, 46], [1, 15, 19, 26, 14, 35, 7, 67, 12, 72, 28, 34, 38, 9, 74, 0, 13, 8, 71, 41, 59, 53, 5, 65], [4, 47, 22, 48, 36, 57, 54, 17, 25, 20, 69, 1, 13, 61, 9, 72, 68, 29, 38, 44, 18, 42, 49, 62], [64, 24, 56, 36, 17, 40, 66, 26, 55, 54, 48, 47, 57, 27, 52, 7, 12, 72, 53, 14, 39, 44, 9, 4], [10, 28, 11, 13, 20, 23, 59, 31, 55, 42, 2, 53, 25, 5, 34, 61, 45, 64, 39, 69, 51, 66, 26, 6], [31, 27, 7, 25, 49, 41, 43, 21, 40, 64, 1, 14, 47, 67, 72, 71, 20, 19, 9, 46, 74, 54, 39, 63], [45, 0, 15, 44, 56, 33, 16, 57, 61, 22, 29, 73, 30, 32, 2, 68, 27, 23, 71, 21, 70, 19, 20, 47], [41, 29, 39, 22, 6, 23, 73, 70, 51, 52, 53, 33, 42, 0, 7, 1, 5, 34, 49, 61, 66, 9, 46, 44], [38, 70, 31, 44, 20, 25, 34, 33, 0, 64, 60, 7, 54, 73, 9, 46, 35, 53, 26, 19, 40, 66, 3, 56], [19, 68, 24, 3, 48, 49, 70, 72, 23, 67, 29, 18, 71, 27, 39, 6, 61, 46, 38, 56, 26, 41, 69, 53], [68, 64, 72, 73, 66, 52, 23, 59, 3, 71, 30, 18, 11, 13, 46, 56, 53, 8, 69, 26, 54, 45, 74, 33], [54, 25, 51, 13, 33, 24, 57, 5, 48, 10, 35, 21, 46, 18, 32, 7, 4, 71, 1, 12, 0, 26, 11, 47], [73, 56, 53, 64, 30, 10, 51, 57, 11, 2, 21, 42, 33, 32, 66, 71, 45, 16, 43, 58, 15, 0, 31, 46], [55, 23, 29, 6, 48, 19, 36, 3, 67, 47, 26, 58, 46, 68, 65, 7, 71, 51, 14, 37, 43, 39, 9, 28], [4, 42, 49, 59, 64, 2, 22, 23, 28, 70, 9, 65, 68, 71, 61, 53, 11, 8, 5, 18, 16, 21, 41, 62], [33, 13, 45, 43, 30, 57, 53, 9, 8, 70, 25, 58, 18, 60, 17, 6, 64, 22, 34, 32, 19, 26, 42, 24], [6, 33, 64, 11, 2, 1, 16, 58, 42, 21, 27, 36, 73, 47, 62, 65, 10, 0, 37, 56, 71, 74, 26, 66], [8, 15, 12, 47, 69, 46, 2, 28, 71, 36, 17, 23, 39, 72, 48, 13, 67, 26, 4, 65, 6, 29, 56, 49], [21, 35, 57, 49, 46, 71, 52, 64, 8, 44, 63, 32, 11, 20, 27, 15, 29, 43, 41, 31, 51, 58, 66, 10], [45, 36, 49, 71, 3, 69, 27, 68, 34, 37, 10, 24, 18, 59, 46, 54, 61, 44, 23, 51, 13, 67, 43, 65], [27, 32, 72, 64, 34, 6, 24, 69, 48, 63, 20, 41, 47, 66, 9, 68, 56, 11, 46, 26, 19, 42, 23, 58], [49, 15, 46, 3, 63, 67, 14, 7, 72, 36, 41, 57, 18, 30, 69, 74, 48, 34, 20, 60, 2, 6, 4, 21], [26, 0, 33, 38, 3, 70, 13, 35, 60, 39, 58, 7, 21, 46, 51, 65, 40, 74, 5, 29, 43, 49, 17, 53], [52, 57, 14, 19, 9, 61, 31, 63, 72, 22, 29, 62, 46, 43, 2, 58, 47, 6, 34, 67, 10, 50, 59, 3], [58, 57, 31, 69, 74, 40, 32, 60, 26, 25, 23, 16, 30, 72, 55, 12, 29, 8, 27, 28, 35, 33, 54, 45], [62, 50, 68, 38, 43, 12, 30, 56, 65, 25, 71, 58, 5, 0, 60, 29, 55, 1, 59, 45, 22, 15, 26, 44], [46, 61, 10, 29, 21, 41, 58, 64, 73, 43, 59, 32, 6, 38, 34, 66, 37, 22, 1, 57, 9, 50, 19, 27], [53, 1, 3, 51, 70, 10, 66, 49, 74, 40, 22, 72, 43, 63, 16, 14, 62, 18, 20, 33, 28, 57, 56, 27], [28, 35, 15, 6, 60, 34, 4, 49, 71, 20, 17, 5, 64, 24, 3, 50, 74, 42, 26, 65, 13, 16, 54, 58], [34, 38, 25, 12, 1, 54, 7, 24, 65, 61, 9, 70, 15, 31, 74, 71, 19, 67, 40, 14, 35, 68, 69, 22], [39, 61, 55, 15, 26, 69, 32, 41, 71, 19, 67, 62, 64, 52, 36, 31, 58, 7, 51, 12, 44, 40, 9, 28], [23, 71, 38, 40, 74, 41, 55, 48, 70, 69, 2, 10, 27, 57, 61, 50, 65, 8, 11, 3, 19, 7, 31, 43], [23, 61, 20, 48, 65, 49, 28, 2, 19, 12, 36, 59, 33, 57, 66, 11, 70, 22, 47, 30, 63, 56, 16, 73], [62, 61, 10, 24, 68, 67, 31, 2, 48, 18, 27, 38, 19, 50, 44, 16, 28, 26, 14, 57, 46, 32, 65, 30], [24, 45, 55, 36, 7, 38, 37, 51, 5, 33, 43, 20, 67, 10, 65, 28, 46, 61, 34, 53, 49, 63, 1, 27], [52, 66, 24, 43, 44, 26, 37, 36, 34, 35, 41, 63, 31, 10, 29, 1, 22, 39, 54, 25, 14, 8, 49, 16], [74, 54, 58, 33, 51, 28, 15, 53, 18, 35, 17, 0, 31, 60, 9, 52, 66, 68, 46, 50, 69, 6, 1, 2], [25, 52, 4, 9, 66, 48, 45, 47, 74, 32, 37, 43, 50, 60, 13, 7, 72, 8, 46, 55, 14, 73, 51, 22], [30, 6, 35, 32, 24, 22, 69, 71, 42, 38, 11, 74, 53, 43, 34, 49, 40, 48, 61, 31, 1, 14, 15, 23], [72, 73, 3, 60, 45, 15, 42, 28, 7, 26, 64, 67, 68, 34, 35, 29, 8, 25, 53, 38, 43, 74, 63, 20], [58, 36, 51, 48, 9, 73, 28, 24, 60, 21, 62, 72, 10, 50, 8, 67, 42, 30, 4, 65, 16, 52, 31, 33], [11, 43, 21, 72, 57, 19, 2, 60, 35, 38, 5, 40, 68, 31, 62, 6, 49, 45, 36, 14, 30, 46, 22, 0], [42, 31, 21, 57, 10, 18, 51, 63, 8, 4, 36, 13, 29, 53, 74, 16, 72, 23, 15, 50, 47, 30, 22, 44], [38, 6, 66, 7, 63, 40, 60, 0, 59, 8, 12, 74, 31, 48, 27, 35, 43, 39, 32, 41, 57, 29, 61, 11], [1, 71, 66, 7, 20, 42, 36, 54, 15, 14, 13, 11, 30, 56, 28, 31, 40, 38, 4, 3, 25, 34, 22, 37], [54, 70, 59, 34, 36, 5, 8, 66, 3, 47, 16, 58, 20, 21, 39, 38, 49, 2, 32, 57, 35, 69, 7, 42], [58, 68, 50, 19, 9, 17, 4, 20, 72, 34, 10, 48, 11, 49, 66, 40, 38, 70, 0, 13, 12, 31, 52, 25], [64, 44, 1, 27, 10, 72, 61, 11, 48, 59, 39, 22, 31, 70, 18, 53, 21, 69, 49, 2, 63, 43, 15, 65], [28, 22, 21, 18, 63, 37, 60, 25, 32, 59, 20, 54, 67, 40, 51, 52, 11, 71, 4, 2, 12, 38, 36, 55], [5, 46, 47, 12, 43, 64, 66, 39, 62, 26, 52, 19, 9, 44, 33, 4, 65, 74, 31, 71, 56, 25, 53, 72]]}, "2010": {"songs": [["Rolling in the Deep", "Adele"], ["Someone Like You", "Adele"], ["Uptown Funk", "Mark Ronson ft. Bruno Mars"], ["Just the Way You Are", "Bruno Mars"], ["Firework", "Katy Perry"], ["Roar", "Katy Perry"], ["We Found Love", "Rihanna"], ["Diamonds", "Rihanna"], ["Shallow", "Lady Gaga & Bradley Cooper"], ["Shake It Off", "Taylor Swift"], ["Blank Space", "Taylor Swift"], ["Shape of You", "Ed Sheeran"], ["Thinking Out Loud", "Ed Sheeran"], ["Sorry", "Justin Bieber"], ["Despacito", "Luis Fonsi & Daddy Yankee"], ["Happy", "Pharrell Williams"], ["Call Me Maybe", "Carly Rae Jepsen"], ["Somebody That I Used to Know", "Gotye"], ["Gangnam Style", "PSY"], ["Party Rock Anthem", "LMFAO"], ["Get Lucky", "Daft Punk"], ["Wake Me Up", "Avicii"], ["Levels", "Avicii"], ["Titanium", "David Guetta ft. Sia"], ["Summer", "Calvin Harris"], ["Blinding Lights", "The Weeknd"], ["Can't Feel My Face", "The Weeknd"], ["Bad Guy", "Billie Eilish"], ["7 Rings", "Ariana Grande"], ["New Rules", "Dua Lipa"], ["Chandelier", "Sia"], ["Cheap Thrills", "Sia"], ["All About That Bass", "Meghan Trainor"], ["What Makes You Beautiful", "One Direction"], ["Moves Like Jagger", "Maroon 5"], ["Waka Waka", "Shakira"], ["Super Bass", "Nicki Minaj"], ["Thrift Shop", "Macklemore & Ryan Lewis"], ["Hotline Bling", "Drake"], ["Old Town Road", "Lil Nas X"], ["Radioactive", "Imagine Dragons"], ["Believer", "Imagine Dragons"], ["Paradise", "Coldplay"], ["A Sky Full of Stars", "Coldplay"], ["Counting Stars", "OneRepublic"], ["Stressed Out", "Twenty One Pilots"], ["Heathens", "Twenty One Pilots"], ["Do I Wanna Know?", "Arctic Monkeys"], ["Pumped Up Kicks", "Foster the People"], ["We Are Young", "Fun."], ["High Hopes", "Panic! at the Disco"], ["Ain't It Fun", "Paramore"], ["Centuries", "Fall Out Boy"], ["Royals", "Lorde"], ["Take Me to Church", "Hozier"], ["Video Games", "Lana Del Rey"], ["Little Talks", "Of Monsters and Men"], ["Feel It Still", "Portugal. The Man"], ["Ho Hey", "The Lumineers"], ["Pompeii", "Bastille"], ["Alors on danse", "Stromae"], ["Papaoutai", "Stromae"], ["Bella", "Maître Gims"], ["Dernière danse", "Indila"], ["Andalouse", "Kendji Girac"], ["Avenir", "Louane"], ["Christine", "Christine and the Queens"], ["Balance ton quoi", "Angèle"], ["Djadja", "Aya Nakamura"], ["Au DD", "PNL"], ["Cosmo", "Soprano"], ["Sur ma route", "Black M"], ["Je veux", "Zaz"], ["Je m'en vais", "Vianney"], ["Dommage", "Bigflo & Oli"]], "cards": [[43, 70, 49, 5, 0, 8, 33, 17, 63, 59, 41, 50, 65, 56, 48, 14, 46, 58, 54, 26, 30, 72, 25, 15], [56, 22, 57, 52, 6, 51, 62, 58, 24, 4, 8, 46, 50, 73, 70, 47, 30, 14, 17, 43, 26, 39, 53, 67], [28, 50, 30, 10, 67, 25, 71, 68, 59, 47, 72, 19, 48, 3, 22, 61, 64, 12, 16, 32, 62, 55, 70, 49], [14, 49, 42, 12, 54, 11, 32, 53, 10, 16, 47, 35, 24, 1, 44, 52, 61, 57, 70, 45, 25, 55, 21, 69], [9, 4, 36, 12, 31, 17, 45, 2, 15, 1, 5, 7, 74, 61, 6, 49, 8, 19, 57, 58, 47, 66, 52, 38], [60, 51, 13, 36, 33, 24, 1, 14, 47, 27, 72, 10, 46, 69, 64, 21, 7, 48, 39, 23, 18, 4, 9, 42], [67, 51, 47, 5, 63, 46, 14, 53, 27, 31, 19, 71, 0, 2, 20, 42, 38, 28, 18, 25, 60, 13, 34, 10], [32, 34, 25, 0, 10, 50, 33, 51, 1, 64, 2, 26, 41, 73, 37, 66, 20, 70, 35, 18, 17, 29, 47, 72], [12, 38, 42, 21, 8, 52, 7, 32, 28, 9, 70, 36, 19, 34, 62, 44, 3, 54, 68, 5, 15, 29, 43, 24], [37, 26, 51, 17, 18, 69, 8, 53, 36, 11, 6, 38, 19, 16, 70, 22, 74, 43, 45, 13, 40, 5, 20, 2], [25, 4, 71, 16, 5, 28, 35, 17, 74, 43, 14, 62, 50, 29, 64, 41, 51, 46, 8, 20, 70, 31, 23, 2], [56, 66, 32, 44, 64, 25, 62, 20, 71, 53, 41, 13, 50, 30, 55, 59, 63, 73, 35, 17, 36, 18, 65, 14], [70, 16, 61, 59, 58, 68, 52, 62, 74, 15, 7, 39, 40, 6, 67, 41, 35, 0, 34, 22, 28, 26, 49, 3], [28, 35, 66, 58, 6, 50, 55, 48, 27, 69, 1, 33, 71, 2, 22, 49, 39, 12, 45, 8, 36, 21, 0, 10], [51, 26, 69, 7, 47, 54, 2, 12, 29, 65, 62, 32, 15, 22, 23, 68, 28, 6, 57, 42, 20, 33, 36, 73], [74, 26, 51, 44, 60, 49, 15, 19, 12, 61, 5, 73, 27, 63, 67, 36, 35, 48, 14, 69, 16, 52, 54, 45], [1, 73, 69, 23, 16, 64, 14, 62, 47, 10, 56, 24, 37, 25, 35, 32, 2, 61, 49, 22, 65, 6, 41, 58], [44, 28, 60, 42, 4, 16, 62, 37, 26, 51, 1, 7, 46, 10, 57, 73, 54, 49, 65, 59, 71, 39, 41, 5], [31, 41, 4, 57, 17, 52, 27, 18, 8, 66, 10, 30, 13, 74, 56, 19, 28, 62, 16, 21, 43, 6, 47, 67], [73, 26, 48, 31, 18, 70, 42, 15, 8, 23, 14, 38, 39, 44, 5, 24, 49, 50, 43, 47, 62, 74, 11, 60], [71, 43, 12, 63, 28, 27, 20, 4, 2, 36, 10, 25, 22, 68, 42, 37, 69, 8, 41, 58, 34, 49, 51, 73], [59, 46, 58, 63, 30, 7, 39, 6, 73, 23, 66, 42, 4, 20, 2, 53, 24, 48, 10, 51, 0, 38, 21, 70], [16, 44, 73, 72, 57, 63, 74, 38, 12, 33, 3, 20, 51, 60, 8, 49, 15, 7, 36, 56, 10, 24, 29, 54], [34, 16, 70, 44, 0, 5, 68, 8, 36, 37, 19, 6, 33, 26, 42, 38, 39, 2, 61, 28, 52, 27, 72, 54], [13, 47, 67, 33, 22, 42, 62, 68, 38, 17, 74, 37, 0, 16, 63, 61, 58, 48, 45, 72, 51, 7, 3, 18], [33, 25, 71, 0, 58, 19, 56, 10, 30, 31, 46, 67, 35, 14, 54, 23, 11, 28, 40, 24, 43, 59, 13, 53], [45, 55, 47, 0, 27, 1, 17, 34, 64, 25, 38, 11, 51, 31, 14, 20, 29, 59, 44, 32, 37, 60, 54, 73], [32, 17, 68, 46, 18, 16, 55, 22, 45, 39, 10, 12, 50, 4, 44, 35, 24, 73, 13, 29, 49, 33, 21, 5], [16, 41, 73, 4, 44, 59, 47, 62, 9, 60, 38, 22, 57, 3, 18, 17, 31, 43, 14, 61, 15, 7, 33, 11], [18, 49, 21, 73, 0, 28, 69, 4, 57, 64, 20, 53, 5, 25, 19, 65, 34, 17, 12, 27, 2, 43, 66, 48], [73, 35, 8, 40, 54, 33, 23, 36, 60, 41, 38, 64, 27, 13, 12, 51, 74, 50, 66, 65, 25, 29, 46, 20], [42, 5, 3, 25, 15, 61, 71, 4, 47, 73, 66, 58, 31, 23, 20, 44, 57, 29, 62, 35, 50, 39, 60, 12], [50, 42, 37, 16, 52, 21, 22, 60, 40, 55, 63, 71, 62, 18, 41, 0, 36, 5, 66, 26, 68, 74, 29, 31], [5, 43, 46, 74, 7, 52, 18, 4, 60, 32, 50, 42, 21, 44, 29, 59, 68, 41, 25, 20, 2, 33, 22, 11], [53, 1, 34, 18, 70, 11, 22, 7, 30, 9, 61, 71, 36, 33, 51, 10, 41, 2, 62, 68, 72, 65, 13, 39], [32, 22, 41, 62, 0, 57, 2, 71, 11, 61, 63, 60, 3, 29, 68, 55, 42, 65, 47, 25, 50, 52, 69, 74], [4, 1, 67, 5, 44, 70, 3, 7, 51, 37, 25, 19, 26, 28, 2, 36, 24, 53, 60, 29, 35, 42, 20, 54], [10, 37, 73, 53, 60, 32, 52, 34, 3, 12, 24, 18, 64, 47, 67, 61, 56, 51, 0, 23, 26, 15, 46, 69], [56, 44, 66, 73, 6, 57, 72, 12, 50, 55, 39, 68, 53, 71, 32, 11, 74, 33, 34, 20, 22, 54, 43, 1], [59, 20, 51, 22, 39, 9, 31, 21, 29, 60, 24, 7, 61, 44, 23, 19, 73, 63, 70, 55, 54, 50, 41, 32], [17, 73, 59, 34, 4, 55, 25, 16, 0, 26, 42, 52, 19, 9, 7, 39, 31, 53, 27, 67, 12, 56, 65, 69], [51, 45, 64, 8, 2, 67, 5, 42, 19, 32, 35, 12, 31, 14, 53, 9, 62, 11, 55, 63, 40, 66, 28, 73], [35, 55, 5, 44, 57, 47, 52, 37, 31, 13, 50, 48, 70, 45, 6, 26, 56, 34, 38, 49, 63, 64, 11, 21], [47, 16, 55, 2, 30, 61, 36, 32, 25, 40, 22, 57, 6, 11, 67, 3, 51, 33, 45, 60, 42, 26, 5, 0], [58, 67, 11, 73, 35, 55, 62, 54, 22, 18, 23, 9, 19, 52, 50, 7, 13, 30, 63, 33, 61, 53, 0, 39], [67, 60, 39, 29, 74, 59, 61, 48, 63, 32, 19, 44, 11, 38, 71, 0, 1, 24, 40, 35, 62, 17, 28, 43], [1, 5, 63, 22, 41, 44, 59, 25, 36, 38, 27, 13, 67, 50, 62, 11, 28, 70, 73, 58, 68, 72, 23, 32], [6, 44, 34, 4, 63, 13, 20, 67, 35, 16, 72, 28, 32, 25, 58, 14, 17, 39, 8, 57, 36, 59, 0, 1], [29, 65, 68, 44, 57, 64, 69, 25, 34, 62, 63, 24, 43, 60, 37, 10, 50, 33, 7, 1, 38, 21, 15, 23], [67, 60, 40, 44, 9, 10, 58, 32, 49, 54, 73, 43, 46, 20, 33, 2, 57, 52, 64, 35, 65, 24, 68, 74]]}};
+const HASH={"90": "8c968325", "2000": "c3fcc2df", "2010": "f44f6b59"};
+const LABEL={"90":"Années 90","2000":"Années 2000","2010":"Années 2010"};
+const $=id=>document.getElementById(id);
+const yt=s=>'https://www.youtube.com/results?search_query='+encodeURIComponent(s[1]+' '+s[0]);
+const SVC={ytm:{n:'YouTube Music',u:q=>'https://music.youtube.com/search?q='+encodeURIComponent(q)},spotify:{n:'Spotify',u:q=>'https://open.spotify.com/search/'+encodeURIComponent(q)},apple:{n:'Apple Music',u:q=>'https://music.apple.com/fr/search?term='+encodeURIComponent(q)}};
+let svc='ytm';
+const ytm=s=>SVC[svc].u(s[1]+' '+s[0]);
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+function fnv(s){let h=0x811c9dc5;for(const ch of s){h^=ch.codePointAt(0);h=Math.imul(h,0x01000193)>>>0;}return h.toString(16);}
+const LINES=[];for(let r=0;r<5;r++)LINES.push([0,1,2,3,4].map(c=>r*5+c));for(let c=0;c<5;c++)LINES.push([0,1,2,3,4].map(r=>r*5+c));LINES.push([0,6,12,18,24],[4,8,12,16,20]);
+const CORNERS=[0,4,20,24];
+let dec=null;
+function show(id){["gate","mode","player","host"].forEach(s=>$(s).hidden=s!==id);window.scrollTo(0,0);}
+function cardSongs(n){const idx=DATA[dec].cards[n-1];const out=idx.slice(0,12).map(i=>DATA[dec].songs[i]);out.push(null);return out.concat(idx.slice(12).map(i=>DATA[dec].songs[i]));}
+function cardIdx(n){const idx=DATA[dec].cards[n-1];return idx.slice(0,12).concat([-1],idx.slice(12));}
+function status(on){const line=LINES.some(l=>l.every(i=>on[i]));const corners=CORNERS.every(i=>on[i]);const full=on.every(Boolean);return{line,corners,full,winCells:new Set(LINES.filter(l=>l.every(i=>on[i])).flat())};}
+
+/* gate */
+$('gateForm').addEventListener('submit',e=>{e.preventDefault();const c=$('code').value.trim().toUpperCase().replace(/\s+/g,'');const h=fnv(c);
+  const d=Object.keys(HASH).find(k=>HASH[k]===h);
+  if(!d){$('err').textContent="Ce code ne marche pas. Vérifie-le auprès de l'organisateur de la soirée.";return;}
+  $('err').textContent="";store.set('ota_dec',d);store.set('ota_ok_'+d,h);enter(d);});
+function enter(d){dec=d;$('modeTitle').innerHTML='Bingo <span class="marker">'+d+'</span>';$('topLcd').textContent='▶ '+LABEL[d].toUpperCase();show('mode');}
+$('logout').addEventListener('click',()=>{store.set('ota_dec',null);dec=null;$('code').value='';$('topLcd').textContent='▶ PRÊT';show('gate');});
+$('goPlayer').addEventListener('click',()=>{openPlayer();});
+$('goHost').addEventListener('click',()=>{openHost();});
+$('pBack').addEventListener('click',()=>show('mode'));
+$('hBack').addEventListener('click',()=>show('mode'));
+
+/* player */
+let pn=1,pon=[];
+function openPlayer(){pn=store.get('ota_card_'+dec,0);if(!pn){pn=1+Math.floor(Math.random()*50);store.set('ota_card_'+dec,pn);}
+  pon=store.get('ota_on_'+dec+'_'+pn,null)||Array(25).fill(false);pon[12]=true;renderPlayer();show('player');}
+function renderPlayer(){$('pTitle').textContent='Bingo '+LABEL[dec];$('pNum').textContent='CARTE N°'+String(pn).padStart(2,'0');
+  const g=$('pGrid');g.innerHTML='';const s=cardSongs(pn);const st=status(pon);
+  s.forEach((x,i)=>{const b=document.createElement('button');b.type='button';b.className='cell';
+    if(!x){b.classList.add('free');b.innerHTML='<b>CASE<br>OFFERTE</b>';b.disabled=true;}
+    else{b.innerHTML='<b></b><i></i>';b.querySelector('b').textContent=x[0];b.querySelector('i').textContent=x[1];b.setAttribute('aria-pressed',String(pon[i]));b.setAttribute('aria-label',x[0]+', '+x[1]);
+      if(pon[i])b.classList.add('on');if(st.winCells.has(i))b.classList.add('win');
+      b.addEventListener('click',()=>{pon[i]=!pon[i];store.set('ota_on_'+dec+'_'+pn,pon);renderPlayer();});}
+    g.appendChild(b);});
+  $('pBingo').classList.toggle('show',st.line);
+  $('pWins').innerHTML=[['Ligne',st.line],['4 coins',st.corners],['Carton plein',st.full]].map(([t,ok])=>'<span class="win-chip'+(ok?' got':'')+'">'+(ok?'✓ ':'')+t+'</span>').join('');
+}
+function askNew(){const w=$('newWrap');w.innerHTML='<span class="confirm">Effacer ta carte ? <button class="btn small" type="button" id="pYes">Oui</button><button class="btn ghost small" type="button" id="pNo">Non</button></span>';
+  $('pYes').addEventListener('click',()=>{let n;do{n=1+Math.floor(Math.random()*50);}while(n===pn);pn=n;store.set('ota_card_'+dec,pn);pon=Array(25).fill(false);pon[12]=true;restoreNew();renderPlayer();});
+  $('pNo').addEventListener('click',restoreNew);}
+function restoreNew(){$('newWrap').innerHTML='<button class="btn ghost small" type="button" id="pNew">Nouvelle carte</button>';bindNew();}
+function bindNew(){$('pNew').addEventListener('click',askNew);}
+bindNew();
+
+/* host */
+let played=new Set(),nextIdx=null;
+function setSvc(k){svc=SVC[k]?k:'ytm';store.set('ota_svc',svc);document.querySelectorAll('.svc button').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.s===svc)));
+  if(nextIdx!=null){const s=DATA[dec].songs[nextIdx];$('ytmNext').href=ytm(s);$('ytmNext').textContent='▶ Écouter sur '+SVC[svc].n;}
+  if(dec&&!$('host').hidden)renderHost();}
+document.querySelectorAll('.svc button').forEach(b=>b.addEventListener('click',()=>setSvc(b.dataset.s)));
+function openHost(){played=new Set(store.get('ota_played_'+dec,[]));show('host');setSvc(store.get('ota_svc','ytm'));renderHost();}
+function saveHost(){store.set('ota_played_'+dec,[...played]);}
+function renderHost(){$('hTitle').textContent='Animateur · '+dec;$('hCount').textContent=String(played.size).padStart(2,'0')+'/75';
+  const L=$('hList');L.innerHTML='';DATA[dec].songs.forEach((s,i)=>{const row=document.createElement('label');row.className='song'+(played.has(i)?' done':'');
+    row.innerHTML='<input type="checkbox"><span class="n"></span><span class="t"><b></b><span></span></span><a class="yt" target="_blank" rel="noopener">▶ Écouter</a>';const ys=row.querySelector('.yt');ys.href=ytm(s);ys.setAttribute('aria-label','Écouter '+s[0]+' sur '+SVC[svc].n);
+    const cb=row.querySelector('input');cb.checked=played.has(i);cb.setAttribute('aria-label',s[0]);
+    row.querySelector('.n').textContent=String(i+1).padStart(2,'0');row.querySelector('b').textContent=s[0];row.querySelector('.t span').textContent=s[1];
+    cb.addEventListener('change',()=>{cb.checked?played.add(i):played.delete(i);saveHost();renderHost();if(!$('vOut').hidden)verify();});L.appendChild(row);});}
+$('draw').addEventListener('click',()=>{const left=DATA[dec].songs.map((_,i)=>i).filter(i=>!played.has(i));
+  if(!left.length){$('ytRow').hidden=true;$('nextT').textContent='Tous les titres sont passés !';$('nextA').textContent='Lance une nouvelle partie.';$('markNext').hidden=true;return;}
+  nextIdx=left[Math.floor(Math.random()*left.length)];const s=DATA[dec].songs[nextIdx];$('nextT').textContent=s[0];$('nextA').textContent=s[1];$('markNext').hidden=false;$('ytmNext').href=ytm(s);$('ytmNext').textContent='▶ Écouter sur '+SVC[svc].n;$('ytmNext').dataset.i=nextIdx;$('ytRow').hidden=false;});
+$('markNext').addEventListener('click',()=>{if(nextIdx==null)return;$('ytRow').hidden=true;played.add(nextIdx);saveHost();renderHost();$('markNext').hidden=true;$('nextT').textContent='C’est noté !';$('nextA').textContent='Touche « Titre au hasard » pour le suivant';nextIdx=null;if(!$('vOut').hidden)verify();});
+function askReset(){const w=$('resetWrap');w.innerHTML='<span class="confirm">Tout décocher ? <button class="btn small" type="button" id="rYes">Oui</button><button class="btn ghost small" type="button" id="rNo">Non</button></span>';
+  const back=()=>{w.innerHTML='<button class="btn ghost small" type="button" id="hReset">Nouvelle partie</button>';bindReset();};
+  $('rYes').addEventListener('click',()=>{played=new Set();saveHost();renderHost();back();$('vOut').hidden=true;});$('rNo').addEventListener('click',back);}
+function bindReset(){$('hReset').addEventListener('click',askReset);}
+bindReset();
+function verify(){const n=parseInt($('vNum').value,10);if(!(n>=1&&n<=50)){$('vRes').innerHTML='<span class="no">Entre un numéro entre 1 et 50.</span>';$('vOut').hidden=false;$('vGrid').innerHTML='';return;}
+  const idx=cardIdx(n);const on=idx.map(i=>i<0||played.has(i));const st=status(on);const g=$('vGrid');g.innerHTML='';
+  idx.forEach((si,k)=>{const d=document.createElement('div');d.className='cell';d.style.cursor='default';
+    if(si<0){d.classList.add('free');d.innerHTML='<b>OFFERTE</b>';}else{const s=DATA[dec].songs[si];d.innerHTML='<b></b>';d.querySelector('b').textContent=s[0];if(played.has(si))d.classList.add('played','on');if(st.winCells.has(k))d.classList.add('win');}
+    g.appendChild(d);});
+  const f=(t,ok)=>'<span class="'+(ok?'yes':'no')+'">'+(ok?'✓ ':'✗ ')+t+'</span>';
+  $('vRes').innerHTML='Carte n°'+n+' : '+f('ligne',st.line)+' · '+f('4 coins',st.corners)+' · '+f('carton plein',st.full);$('vOut').hidden=false;}
+$('vGo').addEventListener('click',verify);
+
+/* resume */
+(function(){const d=store.get('ota_dec',null);if(d&&DATA[d]&&store.get('ota_ok_'+d,null)===HASH[d])enter(d);})();
+</script>
+
+</body></html>
